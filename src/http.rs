@@ -7,7 +7,7 @@ use http::{
 };
 use std::{
     convert::TryFrom,
-    net::{IpAddr, SocketAddr},
+    net::IpAddr,
 };
 use percent_encoding::NON_ALPHANUMERIC;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -255,7 +255,7 @@ pub struct RotatingNanoIpDetails {
 ///
 /// See the documentation for [`http::Error`].
 pub fn load_track(
-    address: SocketAddr,
+    address: String,
     identifier: impl AsRef<str>,
     authorization: impl AsRef<str>,
 ) -> Result<Request<&'static [u8]>, HttpError> {
@@ -280,7 +280,7 @@ pub fn load_track(
 ///
 /// See the documentation for [`http::Error`].
 pub fn get_route_planner(
-    address: SocketAddr,
+    address: String,
     authorization: impl AsRef<str>,
 ) -> Result<Request<&'static [u8]>, HttpError> {
     let mut req = Request::get(format!("{address}/routeplanner/status"));
@@ -299,7 +299,7 @@ pub fn get_route_planner(
 ///
 /// See the documentation for [`http::Error`].
 pub fn unmark_failed_address(
-    node_address: impl Into<SocketAddr>,
+    node_address: String,
     authorization: impl AsRef<str>,
     route_address: impl Into<IpAddr>,
 ) -> Result<Request<Vec<u8>>, HttpError> {
