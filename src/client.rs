@@ -271,11 +271,11 @@ impl Lavalink {
     /// See the errors section of [`Node::connect`].
     pub async fn add(
         &self,
-        address: impl Into<String>,
+        address: String,
         authorization: impl Into<String>,
     ) -> Result<(Arc<Node>, IncomingEvents), NodeError> {
         let config = NodeConfig {
-            address: address.into(),
+            address: address.clone(),
             authorization: authorization.into(),
             resume: self.resume.clone(),
             user_id: self.user_id,
@@ -283,7 +283,7 @@ impl Lavalink {
 
         let (node, rx) = Node::connect(config, self.players.clone()).await?;
         let node = Arc::new(node);
-        self.nodes.insert(address.into(), Arc::clone(&node));
+        self.nodes.insert(address, Arc::clone(&node));
 
         Ok((node, rx))
     }
