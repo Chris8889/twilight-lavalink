@@ -9,7 +9,6 @@ use dashmap::DashMap;
 use std::{
     error::Error,
     fmt::{Display, Formatter, Result as FmtResult},
-    net::SocketAddr,
     sync::Arc,
 };
 use twilight_model::{
@@ -97,7 +96,7 @@ pub enum ClientErrorType {
 /// [`process`]: Self::process
 #[derive(Debug)]
 pub struct Lavalink {
-    nodes: DashMap<SocketAddr, Arc<Node>>,
+    nodes: DashMap<String, Arc<Node>>,
     players: PlayerManager,
     resume: Option<Resume>,
     shard_count: u64,
@@ -272,7 +271,7 @@ impl Lavalink {
     /// See the errors section of [`Node::connect`].
     pub async fn add(
         &self,
-        address: SocketAddr,
+        address: String,
         authorization: impl Into<String>,
     ) -> Result<(Arc<Node>, IncomingEvents), NodeError> {
         let config = NodeConfig {
@@ -296,7 +295,7 @@ impl Lavalink {
     /// or drop all [`Node`]s.
     ///
     /// The node is returned if it existed.
-    pub fn remove(&self, address: SocketAddr) -> Option<(SocketAddr, Arc<Node>)> {
+    pub fn remove(&self, address: String) -> Option<(String, Arc<Node>)> {
         self.nodes.remove(&address)
     }
 
@@ -307,7 +306,7 @@ impl Lavalink {
     /// is required without closing the underlying connection.
     ///
     /// Returns whether the node has been removed and disconnected.
-    pub fn disconnect(&self, address: SocketAddr) -> bool {
+    pub fn disconnect(&self, address: String) -> bool {
         self.nodes.remove(&address).is_some()
     }
 
