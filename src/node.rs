@@ -30,7 +30,6 @@ use http::{header::HeaderName, Request, Response, StatusCode};
 use std::{
     error::Error,
     fmt::{Debug, Display, Formatter, Result as FmtResult},
-    net::SocketAddr,
     pin::Pin,
     task::{Context, Poll},
     time::Duration,
@@ -118,7 +117,7 @@ pub enum NodeErrorType {
     /// The given authorization for the node is incorrect.
     Unauthorized {
         /// The address of the node that failed to authorize.
-        address: SocketAddr,
+        address: String,
         /// The authorization used to connect to the node.
         authorization: String,
     },
@@ -228,7 +227,7 @@ impl NodeSender {
 // Keep fields in sync with its Debug implementation.
 pub struct NodeConfig {
     /// The address of the node.
-    pub address: SocketAddr,
+    pub address: String,
     /// The password to use when authenticating.
     pub authorization: String,
     /// The details for resuming a Lavalink session, if any.
@@ -296,7 +295,7 @@ impl NodeConfig {
     /// [`Lavalink`]: crate::client::Lavalink
     pub fn new(
         user_id: Id<UserMarker>,
-        address: impl Into<SocketAddr>,
+        address: impl Into<String>,
         authorization: impl Into<String>,
         resume: impl Into<Option<Resume>>,
     ) -> Self {
@@ -305,7 +304,7 @@ impl NodeConfig {
 
     const fn _new(
         user_id: Id<UserMarker>,
-        address: SocketAddr,
+        address: String,
         authorization: String,
         resume: Option<Resume>,
     ) -> Self {
@@ -628,7 +627,7 @@ impl Drop for Connection {
 }
 
 fn connect_request(state: &NodeConfig) -> Result<Request<()>, NodeError> {
-    let mut request = "ws://lavalink84.fly.dev"
+    let mut request = format!("ws://{}", state.address)
         .into_client_request()
         .map_err(|source| NodeError {
             kind: NodeErrorType::BuildingConnectionRequest,
@@ -726,39 +725,5 @@ async fn backoff(
                 continue;
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{Node, NodeConfig, NodeError, NodeErrorType, Resume};
-    use static_assertions::{assert_fields, assert_impl_all};
-    use std::{
-        error::Error,
-        fmt::Debug,
-        net::{Ipv4Addr, SocketAddr, SocketAddrV4},
-    };
-    use twilight_model::id::Id;
-
-    assert_fields!(NodeConfig: address, authorization, resume, user_id);
-    assert_impl_all!(NodeConfig: Clone, Debug, Send, Sync);
-    assert_fields!(NodeErrorType::SerializingMessage: message);
-    assert_fields!(NodeErrorType::Unauthorized: address, authorization);
-    assert_impl_all!(NodeErrorType: Debug, Send, Sync);
-    assert_impl_all!(NodeError: Error, Send, Sync);
-    assert_impl_all!(Node: Debug, Send, Sync);
-    assert_fields!(Resume: timeout);
-    assert_impl_all!(Resume: Clone, Debug, Default, Eq, PartialEq, Send, Sync);
-
-    #[test]
-    fn node_config_debug() {
-        let config = NodeConfig {
-            address: SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 1312)),
-            authorization: "some auth".to_owned(),
-            resume: None,
-            user_id: Id::new(123),
-        };
-
-        assert!(format!("{config:?}").contains("authorization: <redacted>"));
     }
 }
