@@ -5,9 +5,12 @@ use http::{
     header::{HeaderValue, AUTHORIZATION},
     Error as HttpError, Request,
 };
+use std::{
+    convert::TryFrom,
+    net::{IpAddr, SocketAddr},
+};
 use percent_encoding::NON_ALPHANUMERIC;
 use serde::{Deserialize, Deserializer, Serialize};
-use std::net::{IpAddr, SocketAddr};
 
 /// The type of search result given.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
