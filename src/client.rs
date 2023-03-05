@@ -283,7 +283,7 @@ impl Lavalink {
 
         let (node, rx) = Node::connect(config, self.players.clone()).await?;
         let node = Arc::new(node);
-        self.nodes.insert(address, Arc::clone(&node));
+        self.nodes.insert(address.clone(), Arc::clone(&node));
 
         Ok((node, rx))
     }
