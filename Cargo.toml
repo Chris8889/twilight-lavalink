@@ -1,6 +1,7 @@
 [package]
 name = "twilight-lavalink"
 version = "0.15.1"
+edition = "2018"
 
 [dependencies]
 dashmap = { default-features = false, version = "5.3" }
