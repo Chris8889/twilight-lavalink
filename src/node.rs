@@ -698,7 +698,7 @@ async fn backoff(
                 {
                     return Err(NodeError {
                         kind: NodeErrorType::Unauthorized {
-                            address: config.address,
+                            address: config.address.clone(),
                             authorization: config.authorization.clone(),
                         },
                         source: None,
