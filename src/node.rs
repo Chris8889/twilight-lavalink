@@ -627,7 +627,7 @@ impl Drop for Connection {
 }
 
 fn connect_request(state: &NodeConfig) -> Result<Request<()>, NodeError> {
-    let mut request = "ws://lavalink84.fly.dev"
+    let mut request = format!("ws://{}", state.address)
         .into_client_request()
         .map_err(|source| NodeError {
             kind: NodeErrorType::BuildingConnectionRequest,
